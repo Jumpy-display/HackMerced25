@@ -1,6 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, CircleMarker, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, CircleMarker, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import L from 'leaflet';
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+// Set up the default icon for markers
+let DefaultIcon = L.icon({
+    iconUrl: icon,
+    shadowUrl: iconShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41]
+});
+L.Marker.prototype.options.icon = DefaultIcon;
+
+// Add this new component to handle map position updates
+function ChangeMapView({ lat, lon }) {
+  const map = useMap();
+  useEffect(() => {
+    map.setView([lat, lon]);
+  }, [lat, lon, map]);
+  return null;
+}
 
 const GroceryMap = ({ lat, lon }) => {
   const [stores, setStores] = useState([]);
@@ -45,6 +66,7 @@ const GroceryMap = ({ lat, lon }) => {
           <Popup>{store.name}</Popup>
         </Marker>
       ))}
+      <ChangeMapView lat={lat} lon={lon} />
     </MapContainer>
   );
 };
