@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Grocery Stores Map with Address Autocomplete</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+    /* Search container styling */
+    #search-container {
+      padding: 10px;
+      background: #f4f4f4;
+    }
+    #address {
+      width: 300px;
+      padding: 5px;
+      font-size: 14px;
+    }
+    #search-btn {
+      padding: 5px 10px;
+      font-size: 14px;
+    }
+    /* Map container takes 60% of the viewport height */
+    #map { 
+      height: 60vh;
+    }
+    /* Table container below the map */
+    #table-container {
+      height: 30vh;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background: #f4f4f4;
+    }
+  </style>
+</head>
+<body>
+  <div id="search-container">
+    <input type="text" id="address" placeholder="Enter address (e.g., Merced, CA)" list="address-suggestions">
+    <datalist id="address-suggestions"></datalist>
+    <button id="search-btn">Search</button>
+  </div>
+  <div id="map"></div>
+  <div id="table-container">
+    <h2>Grocery Stores within 1 Mile</h2>
+    <table id="stores-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Distance (miles)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Grocery store rows will be added here -->
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <!-- Our custom JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
