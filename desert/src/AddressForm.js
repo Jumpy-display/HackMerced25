@@ -1,57 +1,65 @@
-import { useState } from "react";
-import { Card, CardContent, Button, TextField, Container, Typography } from "@mui/material";
-import React, { useContext } from "react";
-import { DataContext } from "./DataContext";
+import React, { useState } from "react";
 
-function AddressForm() {
+const AddressForm = ({ onSearch }) => {
+  const [address, setAddress] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
 
-  const { data, setData } = useContext(DataContext);
-  
-  const [address, setAddress] = useState({
-    street: "",
-    city: "",
-    state: "",
-    zipcode: ""
-  });
-
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleAddressChange = (e) => {
-    setAddress({ ...address, [e.target.name]: e.target.value });
+  // Fetch address suggestions (autocomplete)
+  const fetchSuggestions = async (query) => {
+    if (query.length < 3) return; // Prevent too many requests
+    const url = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${encodeURIComponent(query)}&limit=5`;
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      setSuggestions(data.map((item) => item.display_name));
+    } catch (error) {
+      console.error("Autocomplete error:", error);
+    }
   };
 
-  const handleSubmit = () => {
-    setData(address);
-    console.log("Address saved:", data);
-    setSubmitted(true);
+  // Handle search button click
+  const handleSearch = async () => {
+    if (!address) {
+      alert("Please enter an address.");
+      return;
+    }
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      if (data.length > 0) {
+        onSearch(parseFloat(data[0].lat), parseFloat(data[0].lon));
+      } else {
+        alert("Address not found.");
+      }
+    } catch (error) {
+      console.error("Geocoding error:", error);
+    }
   };
-
-  const handleUnsubmit = () => {
-    setSubmitted(false);
-  }
 
   return (
-    <Container style={{ marginTop: "2rem" }}>
-      <Card variant="outlined" style={{ padding: "1.5rem" }}>
-        <CardContent>
-          {!submitted ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              <TextField label="Street" name="street" variant="outlined" fullWidth onChange={handleAddressChange} />
-              <TextField label="City" name="city" variant="outlined" fullWidth onChange={handleAddressChange} />
-              <TextField label="State" name="state" variant="outlined" fullWidth onChange={handleAddressChange} />
-              <TextField label="ZIP Code" name="zipcode" variant="outlined" fullWidth onChange={handleAddressChange} />
-              <Button variant="contained" color="primary" onClick={handleSubmit} fullWidth>Submit</Button>
-            </div>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column"}}>
-              <Button variant="contained" color="primary" onClick={handleUnsubmit} fullWidth>Change Address</Button>
-            </div>
-
-          )}
-        </CardContent>
-      </Card>
-    </Container>
+    <div style={{ padding: "10px", background: "#f4f4f4" }}>
+      <input
+        type="text"
+        value={address}
+        onChange={(e) => {
+          setAddress(e.target.value);
+          fetchSuggestions(e.target.value);
+        }}
+        list="address-suggestions"
+        placeholder="Enter address (e.g., Merced, CA)"
+        style={{ width: "300px", padding: "5px", fontSize: "14px" }}
+      />
+      <datalist id="address-suggestions">
+        {suggestions.map((s, index) => (
+          <option key={index} value={s} />
+        ))}
+      </datalist>
+      <button onClick={handleSearch} style={{ padding: "5px 10px", fontSize: "14px" }}>
+        Search
+      </button>
+    </div>
   );
-}
+};
 
 export default AddressForm;

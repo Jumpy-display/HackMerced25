@@ -1,15 +1,19 @@
-import logo from './logo.svg';
 import './App.css';
-import { DataProvider } from "./DataContext";
 import AddressForm from "./AddressForm";
+import GroceryMap from "./GroceryMap";
+import StoreTable from "./StoreTable";
+import { useState } from "react";
 
 function App() {
+  const [location, setLocation] = useState({ lat: 37.3022, lon: -120.4820 });
+  const [stores, setStores] = useState([]);
+
   return (
-    <DataProvider>
     <div className="App">
-      <AddressForm />
+      <AddressForm onSearch={(lat, lon) => setLocation({ lat, lon })}/>
+      <GroceryMap lat={location.lat} lon={location.lon}/>
+      <StoreTable stores={stores} />
     </div>
-    </DataProvider>
   );
 }
 

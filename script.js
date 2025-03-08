@@ -121,6 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
       fetch(geocodeUrl)
         .then(response => response.json())
         .then(data => {
+          console.log("HELLO")
           if (data && data.length > 0) {
             var lat = parseFloat(data[0].lat);
             var lon = parseFloat(data[0].lon);
