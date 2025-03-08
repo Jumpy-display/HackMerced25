@@ -5,17 +5,17 @@ const AddressForm = ({ onSearch }) => {
   const [suggestions, setSuggestions] = useState([]);
 
   // Fetch address suggestions (autocomplete)
-  const fetchSuggestions = async (query) => {
-    if (query.length < 3) return; // Prevent too many requests
-    const url = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${encodeURIComponent(query)}&limit=5`;
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
-      setSuggestions(data.map((item) => item.display_name));
-    } catch (error) {
-      console.error("Autocomplete error:", error);
-    }
-  };
+  // const fetchSuggestions = async (query) => {
+  //   if (query.length < 3) return; // Prevent too many requests
+  //   const url = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${encodeURIComponent(query)}&limit=5`;
+  //   try {
+  //     const response = await fetch(url);
+  //     const data = await response.json();
+  //     setSuggestions(data.map((item) => item.display_name));
+  //   } catch (error) {
+  //     console.error("Autocomplete error:", error);
+  //   }
+  // };
 
   // Handle search button click
   const handleSearch = async () => {
@@ -23,7 +23,7 @@ const AddressForm = ({ onSearch }) => {
       alert("Please enter an address.");
       return;
     }
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+    const url = `https://geocode.maps.co/search?q=${encodeURIComponent(address)}&api_key=67ccd5cee0c03893031572fbzb29295`;
     try {
       const response = await fetch(url);
       const data = await response.json();
@@ -44,7 +44,7 @@ const AddressForm = ({ onSearch }) => {
         value={address}
         onChange={(e) => {
           setAddress(e.target.value);
-          fetchSuggestions(e.target.value);
+          //fetchSuggestions(e.target.value);
         }}
         list="address-suggestions"
         placeholder="Enter address (e.g., Merced, CA)"
