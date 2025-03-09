@@ -57,7 +57,10 @@ function AddressForm({ onSearch, setStores, povertyData, setLoading }) {
     fetch(`http://localhost:5000/api/places/${lookupData["lookupName"]}`)
       .then((res) => res.json())
       .then((data) => workWithPovertyData(data, latlon, setStores))
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error(err);
+        setLoading(false);
+      });
   };
 
   async function workWithPovertyData(info, latlon, setStores) {
@@ -108,6 +111,7 @@ function AddressForm({ onSearch, setStores, povertyData, setLoading }) {
       return [data[0].lat, data[0].lon];
     } catch (error) {
       console.error("Geocoding error:", error);
+      setLoading(false);
     }
     return;
   };
