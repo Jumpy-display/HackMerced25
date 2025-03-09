@@ -15,7 +15,7 @@ function App() {
 
   return (
     <div className="App">
-      <AddressForm onSearch={handleSearch}/>
+      <AddressForm onSearch={handleSearch} stores={stores}/>
       <GroceryMap 
 lat={location.lat} 
 lon={location.lon} 

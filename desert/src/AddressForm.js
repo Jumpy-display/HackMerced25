@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Card, CardContent, Button, TextField, Container } from "@mui/material";
 import { retrieveGeography } from "./AddressLookup.js";
+import  App from "./App";
 
-function AddressForm( {onSearch} ) {
+function AddressForm( {onSearch, stores} ) {
 
   const [povertyData, setPovertyData] = useState([]);
 
@@ -40,12 +41,29 @@ function AddressForm( {onSearch} ) {
     let lookupData = await retrieveGeography(tempAddress);
 
     console.log(lookupData);
-
+	
+	//After the fetch we put the data there
     fetch(`http://localhost:5000/api/places/${lookupData["lookupName"]}`)
       .then((res) => res.json())
-      .then((data) => setPovertyData(data))
+      .then((data) => workWithPovertyData(data))
       .catch((err) => console.error(err));
   };
+  
+  function workWithPovertyData(info){
+	  setPovertyData(info);
+	  let pRate = Number(povertyData.povertyRate);
+	  console.log(pRate);
+	  console.log(`The number of stores in your area is ${stores.length}`);
+	  
+	  //Check if the poverty rate is greater than 19 and there are NO stores near you.
+	  if(pRate >= 19 && stores.length == 0){
+		  //Generate a button to link to a new page!
+		  alert("YOU LIVE IN A POOR AREA!");
+	  }else{
+		  alert("YOU LIVE IN A RICH AREA!");
+	  }
+	  
+  }
 
   const handleUnsubmit = () => {
     setSubmitted(false);
