@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Card, CardContent, Button, TextField, Container } from "@mui/material";
+import { retrieveGeography } from "./AddressLookup.js"
 
 function AddressForm( {onSearch} ) {
   
@@ -18,7 +19,15 @@ function AddressForm( {onSearch} ) {
 
   const handleSubmit = () => {
     setSubmitted(true);
+    setAddress({
+      street: `${address.street.replaceAll(",","")}`,
+      city: `${address.city.replaceAll(",","")}`,
+      state: `${address.state.replaceAll(",","")}`,
+      zipcode: `${address.zipcode.replaceAll(",","")}`
+    });
+
     handleSearch();
+    retrieveGeography(address);
   };
 
   const handleUnsubmit = () => {
@@ -32,7 +41,9 @@ function AddressForm( {onSearch} ) {
       return;
     }
     const fullAddress = `${address.street}, ${address.city}, ${address.state} ${address.zipcode}`.trim();
+
     const url = `https://geocode.maps.co/search?q=${encodeURIComponent(fullAddress)}&api_key=67ccd5cee0c03893031572fbzb29295`;
+    console.log(fullAddress);
     try {
       const response = await fetch(url);
       const data = await response.json();
