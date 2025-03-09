@@ -7,6 +7,7 @@ import { useState } from "react";
 function App() {
   const [location, setLocation] = useState({ lat: 37.3022, lon: -120.4820 });
   const [stores, setStores] = useState([]);
+  const [mapLoading, setMapLoading] = useState(false);
 
   var povertyData = [];
 
@@ -16,12 +17,12 @@ function App() {
 
   return (
     <div className="App">
-      <AddressForm onSearch={handleSearch} stores={stores} setStores={setStores} povertyData={povertyData} />
+      <AddressForm onSearch={handleSearch} stores={stores} setStores={setStores} povertyData={povertyData} setLoading={setMapLoading}/>
       <GroceryMap
         lat={location.lat}
         lon={location.lon}
         stores={stores}
-        setStores={setStores}
+        loading={mapLoading}
       />
       <StoreTable stores={stores} />
     </div>

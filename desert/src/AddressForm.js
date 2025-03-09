@@ -3,7 +3,7 @@ import { Card, CardContent, Button, TextField, Container } from "@mui/material";
 import { retrieveGeography } from "./AddressLookup.js";
 import { fetchStores } from "./GroceryMap";
 
-function AddressForm({ onSearch, stores, setStores, povertyData }) {
+function AddressForm({ onSearch, setStores, povertyData, setLoading }) {
 
   const setPovertyData = (p) => {
     povertyData = p;
@@ -32,6 +32,7 @@ function AddressForm({ onSearch, stores, setStores, povertyData }) {
   };
 
   async function handleSubmit() {
+    setLoading(true);
     setSubmitted(true);
 
     let tempAddress = cleanAddress(address);
@@ -70,6 +71,7 @@ function AddressForm({ onSearch, stores, setStores, povertyData }) {
       alert("YOU DO NOT LIVE IN A FOOD DESERT!");
     }
 
+    setLoading(false);
   }
 
   const handleUnsubmit = () => {
@@ -105,8 +107,8 @@ function AddressForm({ onSearch, stores, setStores, povertyData }) {
   };
 
   return (
-    <Container style={{ marginTop: "2rem", marginBottom: "2rem" }}>
-      <Card variant="outlined" style={{ padding: "1.5rem" }}>
+    <Container style={{ marginTop: "2rem", marginBottom: "2rem", display: "flex", justifyContent: "center"}}>
+      <Card variant="outlined" style={{ padding: "1.5rem", width: "50%"}}>
         <CardContent>
           {!submitted ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
