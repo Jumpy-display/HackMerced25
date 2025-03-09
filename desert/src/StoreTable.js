@@ -3,7 +3,7 @@ import { Checkbox, Table, TableBody, TableCell, TableContainer, TableHead, Table
 
 const StoreTable = ({ stores }) => {
   return (
-    <div style={{ height: "30vh", overflowY: "auto", padding: "10px", margin: "30px" }}>
+    <div style={{ height: "60vh", overflowY: "auto", padding: "10px", margin: "30px" }}>
       <Typography variant="h3">Grocery Stores Near You</Typography>
       <Table stickyheader style={{ width: "75%", borderCollapse: "collapse", margin: "auto"}}>
         <TableHead>

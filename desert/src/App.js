@@ -30,14 +30,13 @@ function App() {
           Learn More About Food Deserts
         </Button>
       </div>
+
       <AddressForm onSearch={handleSearch} stores={stores} setStores={setStores} povertyData={povertyData} setLoading={setMapLoading}/>
-      <GroceryMap
-        lat={location.lat}
-        lon={location.lon}
-        stores={stores}
-        loading={mapLoading}
-      />
+      
+      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '30px'}}>
+      <GroceryMap lat={location.lat} lon={location.lon} stores={stores} loading={mapLoading}/>
       <StoreTable stores={stores} />
+      </div>
     </div>
   );
 }
