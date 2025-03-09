@@ -14,6 +14,19 @@ let DefaultIcon = L.icon({
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
+// Add this helper function at the top of the file
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 3959; // Earth's radius in miles
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return (R * c).toFixed(2);
+};
+
 // Add this new component to handle map position updates
 function ChangeMapView({ lat, lon }) {
   const map = useMap();
@@ -23,9 +36,8 @@ function ChangeMapView({ lat, lon }) {
   return null;
 }
 
-const GroceryMap = ({ lat, lon }) => {
-  const [stores, setStores] = useState([]);
-  const radiusMeters = 1609.34;
+const GroceryMap = ({ lat, lon, stores, setStores }) => {
+  const radiusMeters = 1609.34; // 1 mile in meters
 
   const fetchStores = async (lat, lon) => {
     const query = `
@@ -37,16 +49,28 @@ const GroceryMap = ({ lat, lon }) => {
       );
       out center;
     `;
-    const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
-
+    
     try {
-      const response = await fetch(url);
+      const response = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
       const data = await response.json();
-      const parsedStores = data.elements.map((element) => {
-        const storeLat = element.type === "node" ? element.lat : element.center?.lat;
-        const storeLon = element.type === "node" ? element.lon : element.center?.lon;
-        return storeLat && storeLon ? { lat: storeLat, lon: storeLon, name: element.tags?.name || "Unnamed" } : null;
-      }).filter(Boolean);
+      
+      const parsedStores = data.elements
+        .map(element => {
+          const storeLat = element.type === "node" ? element.lat : element.center?.lat;
+          const storeLon = element.type === "node" ? element.lon : element.center?.lon;
+          
+          if (storeLat && storeLon) {
+            return {
+              name: element.tags?.name || "Unnamed Store",
+              distance: calculateDistance(lat, lon, storeLat, storeLon),
+              lat: storeLat,
+              lon: storeLon
+            };
+          }
+          return null;
+        })
+        .filter(Boolean);
+        
       setStores(parsedStores);
     } catch (error) {
       console.error("Error fetching stores:", error);
