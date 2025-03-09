@@ -1,26 +1,59 @@
 import React from "react";
-import { Checkbox, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography} from "@mui/material";
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+    fontSize: 16,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  '&:nth-of-type(odd)': {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  '&:last-child td, &:last-child th': {
+    border: 0,
+  },
+}));
 
 const StoreTable = ({ stores }) => {
   return (
-    <div style={{ height: "60vh", overflowY: "auto", padding: "10px", margin: "30px" }}>
+    <div style={{ height: "60vh", padding: "10px", margin: "30px" }}>
       <Typography style={{ padding: "20px"}} variant="h4">Grocery Stores Near You</Typography>
-      <Table stickyheader style={{ width: "85%", borderCollapse: "collapse", margin: "auto"}}>
+      <div style={{height: "48vh", overflowY: "auto"}}>
+      <TableContainer component={Paper}>
+      <Table>
         <TableHead>
           <TableRow>
-            <TableCell style={{ border: "3px solid #ccc", padding: "8px", background: "#f4f4f4" }}>Name</TableCell>
-            <TableCell style={{ border: "3px solid #ccc", padding: "8px", background: "#f4f4f4" }}>Distance (miles)</TableCell>
+            <StyledTableCell>Name</StyledTableCell>
+            <StyledTableCell align="right">Distance (miles)</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {stores.map((store, index) => (
-            <TableRow key={index}>
-              <TableCell style={{ border: "3px solid #ccc", padding: "8px" }}>{store.name}</TableCell>
-              <TableCell style={{ border: "3px solid #ccc", padding: "8px" }}>{store.distance}</TableCell>
-            </TableRow>
+            <StyledTableRow key={index}>
+              <StyledTableCell>{store.name}</StyledTableCell>
+              <StyledTableCell>{store.distance}</StyledTableCell>
+            </StyledTableRow>
           ))}
         </TableBody>
-      </Table>
+        </Table>
+      </TableContainer>
+      </div>
     </div>
   );
 };
