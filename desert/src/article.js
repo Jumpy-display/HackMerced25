@@ -1,64 +1,80 @@
 import React, { useEffect, useState } from 'react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import ReactMarkdown from 'react-markdown';
+import { useLocation } from 'react-router-dom';
 
+  
 const GeminiComponent = () => {
   const [output, setOutput] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  // Prompt formatted over multiple lines for better readability
-  const fixedPrompt = `I Want You To Act As A Content Writer Very Proficient SEO Writer Writes Fluently English. 
-  Write a 3500-word 100% Unique, SEO-optimized, Human-Written article in English with at least 15 headings and 
-  subheadings (including H1, H2, H3, and H4 headings) that covers the topic provided in the Prompt. 
-  Write The article In Your Own Words Rather Than Copying And Pasting From Other Sources. 
-  Consider perplexity and burstiness when creating content, ensuring high levels of both without losing specificity or context. 
-  Use fully detailed paragraphs that engage the reader. Write In A Conversational Style As Written By A Human 
-  (Use An Informal Tone, Utilize Personal Pronouns, Keep It Simple, Engage The Reader, Use The Active Voice, 
-  Keep It Brief, Use Rhetorical Questions, and Incorporate Analogies And Metaphors). 
-  End with a conclusion paragraph and 5 unique FAQs After The Conclusion. 
-  this is important to Bold the Title and all headings of the article, and use appropriate headings for H tags. 
-  Now Write An Article On This Topic. How to cope with living in a food desert? 
-  Give an answer that starts off talking about how to shop in a food desert. 
-  Then lists resources for food banks and pantries in Riverside. 
-  Finally give resources for how to start a community garden.`;
-  
+  const [city, setCity] = useState();
+  const location = useLocation();
+
   useEffect(() => {
-    const fetchGeminiOutput = async () => {
-      try {
-        setLoading(true);
-        const apiKey = process.env.REACT_APP_GOOGLE_API_KEY;
-        
-        if (!apiKey) {
-          throw new Error("API key not found in environment variables.");
+    const params = new URLSearchParams(location.search);
+    const cityParam = params.get('city');
+    if (cityParam) {
+      setCity(decodeURIComponent(cityParam));
+    }
+  }, [location]);
+
+  useEffect(() => {
+    // Only fetch if city is not empty
+    if (city) {
+      const fetchGeminiOutput = async () => {
+        try {
+          setLoading(true);
+          const apiKey = process.env.REACT_APP_GOOGLE_API_KEY;
+          
+          if (!apiKey) {
+            throw new Error("API key not found in environment variables.");
+          }
+          
+          const genAI = new GoogleGenerativeAI(apiKey);
+          const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+          
+          // Prompt formatted over multiple lines for better readability
+          const fixedPrompt = `I Want You To Act As A Content Writer Very Proficient SEO Writer Writes Fluently English. 
+          Write a 3500-word 100% Unique, SEO-optimized, Human-Written article in English with at least 15 headings and 
+          subheadings (including H1, H2, H3, and H4 headings) that covers the topic provided in the Prompt. 
+          Write The article In Your Own Words Rather Than Copying And Pasting From Other Sources. 
+          Consider perplexity and burstiness when creating content, ensuring high levels of both without losing specificity or context. 
+          Use fully detailed paragraphs that engage the reader. Write In A Conversational Style As Written By A Human 
+          (Use An Informal Tone, Utilize Personal Pronouns, Keep It Simple, Engage The Reader, Use The Active Voice, 
+          Keep It Brief, Use Rhetorical Questions, and Incorporate Analogies And Metaphors). 
+          End with a conclusion paragraph and 5 unique FAQs After The Conclusion. 
+          this is important to Bold the Title and all headings of the article, and use appropriate headings for H tags. 
+          Now Write An Article On This Topic. How to cope with living in a food desert? 
+          Give an answer that starts off talking about how to shop in a food desert. 
+          Then lists resources for food banks and pantries in ${city},CA. 
+          Finally give resources for how to start a community garden.`;
+          
+          const result = await model.generateContent(fixedPrompt);
+          const responseText = result.response.text();
+          
+          // Process the output to remove any outline tables if they exist
+          const processedOutput = removeOutlineTables(responseText);
+          setOutput(processedOutput);
+          setError(null);
+        } catch (error) {
+          console.error("Error fetching Gemini output:", error);
+          let errorMessage = "Error fetching output.";
+          
+          if (error.response) {
+            errorMessage = `Error: ${error.response.status} - ${error.message}`;
+          }
+          
+          setError(errorMessage);
+          setOutput("");
+        } finally {
+          setLoading(false);
         }
-        
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        const result = await model.generateContent(fixedPrompt);
-        const responseText = result.response.text();
-        
-        // Process the output to remove any outline tables if they exist
-        const processedOutput = removeOutlineTables(responseText);
-        setOutput(processedOutput);
-        setError(null);
-      } catch (error) {
-        console.error("Error fetching Gemini output:", error);
-        let errorMessage = "Error fetching output.";
-        
-        if (error.response) {
-          errorMessage = `Error: ${error.response.status} - ${error.message}`;
-        }
-        
-        setError(errorMessage);
-        setOutput("");
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchGeminiOutput();
-  }, []);
+      };
+      
+      fetchGeminiOutput();
+    }
+  }, [city]); // Add city to the dependency array so this runs when city changes
 
   // Function to remove outline tables
   const removeOutlineTables = (text) => {
