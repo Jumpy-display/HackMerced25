@@ -55,7 +55,7 @@ const GeminiComponent = () => {
           this is important to Bold the Title and all headings of the article, and use appropriate headings for H tags. 
           Now Write An Article On This Topic. How to cope with living in a food desert? 
           Give an answer that starts off talking about how to shop in a food desert. 
-          Then lists specific resources for food banks and pantries in ${city}, CA. 
+          Then list resources for food banks and pantries in ${city}, CA. 
           Finally give resources for how to start a community garden.`;
           
           const result = await model.generateContent(fixedPrompt);
