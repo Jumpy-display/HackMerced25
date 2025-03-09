@@ -34,10 +34,10 @@ const StoreTable = ({ stores }) => {
   return (
     <div style={{ height: "60vh", padding: "10px", margin: "30px" }}>
       <Typography style={{ padding: "20px"}} variant="h4">Grocery Stores Near You</Typography>
-      <div style={{height: "48vh", overflowY: "auto"}}>
-      <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
+      <div>
+      <TableContainer style={{height: "48vh", overflowY: "auto"}} component={Paper}>
+      <Table stickyHeader aria-label="sticky table">
+        <TableHead sx={{position: 'sticky'}}>
           <TableRow>
             <StyledTableCell>Name</StyledTableCell>
             <StyledTableCell align="right">Distance (miles)</StyledTableCell>
