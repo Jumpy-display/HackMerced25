@@ -9,6 +9,7 @@ function App() {
   const [location, setLocation] = useState({ lat: 37.3022, lon: -120.4820 });
   const [stores, setStores] = useState([]);
   const [mapLoading, setMapLoading] = useState(false);
+  const [currentCity, setCurrentCity] = useState("");
 
   var povertyData = [];
 
@@ -17,7 +18,7 @@ function App() {
   };
 
   const openArticle = () => {
-    window.open('/article', '_blank');
+    window.open(`/article?city=${encodeURIComponent(currentCity)}`, '_blank');
   };
 
   return (
@@ -31,7 +32,14 @@ function App() {
         </Button>
       </div>
 
-      <AddressForm onSearch={handleSearch} stores={stores} setStores={setStores} povertyData={povertyData} setLoading={setMapLoading}/>
+      <AddressForm 
+        onSearch={handleSearch} 
+        stores={stores} 
+        setStores={setStores} 
+        povertyData={povertyData} 
+        setLoading={setMapLoading}
+        setCurrentCity={setCurrentCity}
+      />
       
       <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '30px'}}>
       <GroceryMap lat={location.lat} lon={location.lon} stores={stores} loading={mapLoading}/>

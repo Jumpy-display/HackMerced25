@@ -3,7 +3,7 @@ import { Card, CardContent, Button, TextField, Container } from "@mui/material";
 import { retrieveGeography } from "./AddressLookup.js";
 import { fetchStores } from "./GroceryMap";
 
-function AddressForm({ onSearch, setStores, povertyData, setLoading }) {
+function AddressForm({ onSearch, setStores, povertyData, setLoading, setCurrentCity }) {
 
   const [submitted, setSubmitted] = useState(false);
 
@@ -67,7 +67,8 @@ function AddressForm({ onSearch, setStores, povertyData, setLoading }) {
     let currStores = await fetchStores(latlon[0], latlon[1], setStores);
     setPovertyData(info);
     console.log(povertyData);
-    let pRate = Number(povertyData.povertyRate);
+    setCurrentCity(address.city);
+        let pRate = Number(povertyData.povertyRate);
     console.log(pRate);
     console.log(`The number of stores in your area is ${currStores.length}`);
 
