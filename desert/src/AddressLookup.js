@@ -30,10 +30,10 @@ window.processData = function(myObj) {
 }
 
 export function retrieveGeography(address) {
-	let street = address.street;
-	let city = address.city;
-	let state = address.state;
-	let zipcode = address.zipcode;
+	let street = address.street.replaceAll(" ","%20");
+	let city = address.city.replaceAll(" ","%20");
+	let state = address.state.replaceAll(" ","");
+	let zipcode = address.zipcode.replaceAll(" ","");
 
     // Construct the API URL
     let url = `https://geocoding.geo.census.gov/geocoder/geographies/address?street=${street}&city=${city}&state=${state}&zip=${zipcode}&benchmark=4&vintage=4&format=jsonp&callback=processData`;
