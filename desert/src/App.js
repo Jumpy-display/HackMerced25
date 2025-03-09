@@ -37,7 +37,7 @@ function App() {
           Learn More About Food Deserts
         </button>
       </div>
-      <AddressForm onSearch={handleSearch} stores={stores} setStores={setStores} povertyData={povertyData} />
+      <AddressForm onSearch={handleSearch} stores={stores} setStores={setStores} povertyData={povertyData} setLoading={setMapLoading}/>
       <GroceryMap
         lat={location.lat}
         lon={location.lon}
