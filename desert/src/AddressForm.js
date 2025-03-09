@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Card, CardContent, Button, TextField, Container } from "@mui/material";
 import { retrieveGeography } from "./AddressLookup.js";
-import  App from "./App";
+import { fetchStores } from "./GroceryMap";
 
-function AddressForm( {onSearch, stores} ) {
+function AddressForm({ onSearch, stores, setStores, povertyData }) {
 
-  const [povertyData, setPovertyData] = useState([]);
-
-  var lookupData = null;
+  const setPovertyData = (p) => {
+    povertyData = p;
+  };
 
   const [address, setAddress] = useState({
     street: "",
@@ -34,35 +34,39 @@ function AddressForm( {onSearch, stores} ) {
   async function handleSubmit() {
     setSubmitted(true);
 
-    let tempAddress = cleanAddress(address); 
+    let tempAddress = cleanAddress(address);
 
-    handleSearch();
+    let latlon = await handleSearch();
+
+    console.log(latlon);
 
     let lookupData = await retrieveGeography(tempAddress);
 
     console.log(lookupData);
-	
-	//After the fetch we put the data there
+
+    //After the fetch we put the data there
     fetch(`http://localhost:5000/api/places/${lookupData["lookupName"]}`)
       .then((res) => res.json())
-      .then((data) => workWithPovertyData(data))
+      .then((data) => workWithPovertyData(data, latlon, setStores))
       .catch((err) => console.error(err));
   };
-  
-  function workWithPovertyData(info){
-	  setPovertyData(info);
-	  let pRate = Number(povertyData.povertyRate);
-	  console.log(pRate);
-	  console.log(`The number of stores in your area is ${stores.length}`);
-	  
-	  //Check if the poverty rate is greater than 19 and there are NO stores near you.
-	  if(pRate >= 19 && stores.length == 0){
-		  //Generate a button to link to a new page!
-		  alert("You live in a food desert!");
-	  }else{
-		  alert("You do NOT live in a food desert.");
-	  }
-	  
+
+  async function workWithPovertyData(info, latlon, setStores) {
+    let currStores = await fetchStores(latlon[0], latlon[1], setStores);
+    setPovertyData(info);
+    console.log(povertyData);
+    let pRate = Number(povertyData.povertyRate);
+    console.log(pRate);
+    console.log(`The number of stores in your area is ${currStores.length}`);
+
+    //Check if the poverty rate is greater than 19 and there are NO stores near you.
+    if (pRate >= 19 && currStores.length === 0) {
+      //Generate a button to link to a new page!
+      alert("YOU LIVE IN A FOOD DESERT!");
+    } else {
+      alert("YOU DO NOT LIVE IN A FOOD DESERT!");
+    }
+
   }
 
   const handleUnsubmit = () => {
@@ -76,7 +80,7 @@ function AddressForm( {onSearch, stores} ) {
       return;
     }
 
-    let tempAddress = cleanAddress(address); 
+    let tempAddress = cleanAddress(address);
 
     const fullAddress = `${tempAddress.street}, ${tempAddress.city}, ${tempAddress.state} ${tempAddress.zipcode}`.trim();
 
@@ -90,13 +94,15 @@ function AddressForm( {onSearch, stores} ) {
       } else {
         alert("Address not found.");
       }
+      return [data[0].lat, data[0].lon];
     } catch (error) {
       console.error("Geocoding error:", error);
     }
+    return;
   };
 
   return (
-    <Container style={{ marginTop: "2rem", marginBottom: "2rem"}}>
+    <Container style={{ marginTop: "2rem", marginBottom: "2rem" }}>
       <Card variant="outlined" style={{ padding: "1.5rem" }}>
         <CardContent>
           {!submitted ? (
@@ -108,7 +114,7 @@ function AddressForm( {onSearch, stores} ) {
               <Button variant="contained" color="primary" onClick={handleSubmit} fullWidth>Submit</Button>
             </div>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column"}}>
+            <div style={{ display: "flex", flexDirection: "column" }}>
               <Button variant="contained" color="primary" onClick={handleUnsubmit} fullWidth>Change Address</Button>
             </div>
 

@@ -34,50 +34,49 @@ function ChangeMapView({ lat, lon }) {
   return null;
 }
 
-const GroceryMap = ({ lat, lon, stores, setStores }) => {
+export async function fetchStores(lat, lon, setStores) {
+
   const radiusMeters = 1609.34; //1 mile in meters
 
-  const fetchStores = async (lat, lon) => {
-    const query = `
-      [out:json];
-      (
-        node["shop"="supermarket"](around:${radiusMeters},${lat},${lon});
-        way["shop"="supermarket"](around:${radiusMeters},${lat},${lon});
-        relation["shop"="supermarket"](around:${radiusMeters},${lat},${lon});
-      );
-      out center;
-    `;
+  const query = `
+    [out:json];
+    (
+      node["shop"="supermarket"](around:${radiusMeters},${lat},${lon});
+      way["shop"="supermarket"](around:${radiusMeters},${lat},${lon});
+      relation["shop"="supermarket"](around:${radiusMeters},${lat},${lon});
+    );
+    out center;
+  `;
+  
+  try {
+    const response = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
+    const data = await response.json();
     
-    try {
-      const response = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
-      const data = await response.json();
-      
-      const parsedStores = data.elements
-        .map(element => {
-          const storeLat = element.type === "node" ? element.lat : element.center?.lat;
-          const storeLon = element.type === "node" ? element.lon : element.center?.lon;
-          
-          if (storeLat && storeLon) {
-            return {
-              name: element.tags?.name || "Unnamed Store",
-              distance: calculateDistance(lat, lon, storeLat, storeLon),
-              lat: storeLat,
-              lon: storeLon
-            };
-          }
-          return null;
-        })
-        .filter(Boolean);
+    const parsedStores = data.elements
+      .map(element => {
+        const storeLat = element.type === "node" ? element.lat : element.center?.lat;
+        const storeLon = element.type === "node" ? element.lon : element.center?.lon;
         
-      setStores(parsedStores);
-    } catch (error) {
-      console.error("Error fetching stores:", error);
-    }
-  };
+        if (storeLat && storeLon) {
+          return {
+            name: element.tags?.name || "Unnamed Store",
+            distance: calculateDistance(lat, lon, storeLat, storeLon),
+            lat: storeLat,
+            lon: storeLon
+          };
+        }
+        return null;
+      })
+      .filter(Boolean);
+      
+    setStores(parsedStores);
+    return parsedStores;
+  } catch (error) {
+    console.error("Error fetching stores:", error);
+  }
+};
 
-  useEffect(() => {
-    fetchStores(lat, lon);
-  }, [lat, lon]);
+const GroceryMap = ({ lat, lon, stores, setStores }) => {
 
   return (
     <MapContainer center={[lat, lon]} zoom={14} style={{ height: "60vh", width: "100%" }}>
