@@ -3,7 +3,7 @@ addr1 = "586 Breeze St, Merced, CA 95348";
 addr2 = "140 Vía Vaqueros #9774, Martinez, CA 94553";
 addr3 = "506 E Yosemite Ave, Manteca, CA 95336";
 addr4 = "2300 Shore Gem Ave, Thermal, CA 92274";
-addr5 = "One Apple Park Way, Cupertino, CA 95014"
+addr5 = "One Apple Park Way, Cupertino, CA 95014";
 
 /* We need to take the address and format it as so:
  * https://geocoding.geo.census.gov/geocoder/geographies/address?street=
