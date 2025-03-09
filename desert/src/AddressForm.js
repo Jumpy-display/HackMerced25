@@ -103,6 +103,7 @@ function AddressForm({ onSearch, setStores, povertyData, setLoading }) {
         onSearch(parseFloat(data[0].lat), parseFloat(data[0].lon));
       } else {
         alert("Address not found.");
+        setLoading(false);
       }
       return [data[0].lat, data[0].lon];
     } catch (error) {
