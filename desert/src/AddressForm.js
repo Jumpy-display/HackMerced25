@@ -41,6 +41,9 @@ function AddressForm({ onSearch, stores, setStores, povertyData }) {
     console.log(latlon);
 
     let lookupData = await retrieveGeography(tempAddress);
+    if(lookupData === null){
+      return;
+    }
 
     console.log(lookupData);
 
