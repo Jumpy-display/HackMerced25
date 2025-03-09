@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { MapContainer, TileLayer, CircleMarker, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from 'leaflet';
@@ -14,9 +14,8 @@ let DefaultIcon = L.icon({
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
-// Add this helper function at the top of the file
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
-  const R = 3959; // Earth's radius in miles
+  const R = 3959; //radius of Earth in miles
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
   const a = 
@@ -27,7 +26,6 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
   return (R * c).toFixed(2);
 };
 
-// Add this new component to handle map position updates
 function ChangeMapView({ lat, lon }) {
   const map = useMap();
   useEffect(() => {
@@ -37,7 +35,7 @@ function ChangeMapView({ lat, lon }) {
 }
 
 const GroceryMap = ({ lat, lon, stores, setStores }) => {
-  const radiusMeters = 1609.34; // 1 mile in meters
+  const radiusMeters = 1609.34; //1 mile in meters
 
   const fetchStores = async (lat, lon) => {
     const query = `

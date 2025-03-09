@@ -7,10 +7,10 @@ import { useState } from "react";
 function App() {
   const [location, setLocation] = useState({ lat: 37.3022, lon: -120.4820 });
   const [stores, setStores] = useState([]);
+  const [povertyData, setPovertyData] = useState({});
 
   const handleSearch = async (lat, lon) => {
     setLocation({ lat, lon });
-    // Make sure the stores state is being updated here
   };
 
   return (

@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { Card, CardContent, Button, TextField, Container } from "@mui/material";
-import { retrieveGeography } from "./AddressLookup.js"
+import { retrieveGeography } from "./AddressLookup.js";
 
 function AddressForm( {onSearch} ) {
-  
+
+  const [povertyData, setPovertyData] = useState([]);
+
+  var lookupData = null;
+
   const [address, setAddress] = useState({
     street: "",
     city: "",
@@ -11,23 +15,36 @@ function AddressForm( {onSearch} ) {
     zipcode: ""
   });
 
+  const cleanAddress = (a) => {
+    return {
+      street: `${a.street.replace(/[^\w\s]|_/g, "")}`,
+      city: `${a.city.replace(/[^\w\s]|_/g, "")}`,
+      state: `${a.state.replace(/[^\w\s]|_/g, "")}`,
+      zipcode: `${a.zipcode.replace(/[^\w\s]|_/g, "")}`
+    };
+  }
+
   const [submitted, setSubmitted] = useState(false);
 
   const handleAddressChange = (e) => {
     setAddress({ ...address, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = () => {
+  async function handleSubmit() {
     setSubmitted(true);
-    setAddress({
-      street: `${address.street.replaceAll(",","")}`,
-      city: `${address.city.replaceAll(",","")}`,
-      state: `${address.state.replaceAll(",","")}`,
-      zipcode: `${address.zipcode.replaceAll(",","")}`
-    });
+
+    let tempAddress = cleanAddress(address); 
 
     handleSearch();
-    retrieveGeography(address);
+
+    let lookupData = await retrieveGeography(tempAddress);
+
+    console.log(lookupData);
+
+    fetch(`http://localhost:5000/api/places/${lookupData["lookupName"]}`)
+      .then((res) => res.json())
+      .then((data) => setPovertyData(data))
+      .catch((err) => console.error(err));
   };
 
   const handleUnsubmit = () => {
@@ -40,7 +57,10 @@ function AddressForm( {onSearch} ) {
       alert("Please enter an address.");
       return;
     }
-    const fullAddress = `${address.street}, ${address.city}, ${address.state} ${address.zipcode}`.trim();
+
+    let tempAddress = cleanAddress(address); 
+
+    const fullAddress = `${tempAddress.street}, ${tempAddress.city}, ${tempAddress.state} ${tempAddress.zipcode}`.trim();
 
     const url = `https://geocode.maps.co/search?q=${encodeURIComponent(fullAddress)}&api_key=67ccd5cee0c03893031572fbzb29295`;
     console.log(fullAddress);
