@@ -1,25 +1,25 @@
-const{MongoClient} = require("mongodb") //grabs a mongo client object from the mongodb library that we installed earlier
-require("dotenv").config({path: "./config.env"}) //accesses the .env library that we just installed and tells it to look at config.env file for our environment area
+const { MongoClient } = require("mongodb"); // Grabs a Mongo client object from the MongoDB library
+require("dotenv").config({ path: "./config.env" }); // Accesses the .env file for environment variables
 
-async function main(){
-    const Db = process.env.ATLAS_URI
-    const client = new MongoClient(Db)
+async function main() {
+    const Db = process.env.ATLAS_URI;
+    const client = new MongoClient(Db);
 
-    // await client.connect() //this function is not instatous also does connect to the database
+    query = {"name": "Riverside city"};
 
-    // const collections = await client.db("ToDoApp").collections() //test function. This will grab all the collections from the ToDoApp database
-    // collections.forEach((collection) => console.log(collection.s.namespace.collection)) //will print off everything in collection
+    try {
+        await client.connect(); // Connects to the database
+        const db = client.db("map_data"); // Access the map_data database
+        const collection = db.collection("places"); // Access the places collection
 
-    try{
-        await client.connect() //this function is not instatous also does connect to the database
-
-        const collections = await client.db("map_data").collections() //test function. This will grab all the collections from the ToDoApp database
-        collections.forEach((collection) => console.log(collection.s.namespace.collection)) //will print off everything in collection
-    } catch(e) {
-        console.error(e)
+        console.log("\nCollection: places");
+        const documents = await collection.find(query).toArray(); // Retrieve all documents
+        console.log(documents); // Print all documents in the collection
+    } catch (e) {
+        console.error(e);
     } finally {
-        await client.close()
+        await client.close();
     }
 }
 
-main() 
+main();
