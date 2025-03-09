@@ -58,9 +58,9 @@ function AddressForm( {onSearch, stores} ) {
 	  //Check if the poverty rate is greater than 19 and there are NO stores near you.
 	  if(pRate >= 19 && stores.length == 0){
 		  //Generate a button to link to a new page!
-		  alert("YOU LIVE IN A POOR AREA!");
+		  alert("You live in a food desert!");
 	  }else{
-		  alert("YOU LIVE IN A RICH AREA!");
+		  alert("You do NOT live in a food desert.");
 	  }
 	  
   }
