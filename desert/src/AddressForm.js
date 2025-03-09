@@ -3,7 +3,7 @@ import { Card, CardContent, Button, TextField, Container } from "@mui/material";
 import { retrieveGeography } from "./AddressLookup.js";
 import { fetchStores } from "./GroceryMap";
 
-function AddressForm({ onSearch, setStores, povertyData, setLoading, setCurrentCity }) {
+function AddressForm({ onSearch, setStores, povertyData, setLoading, setCurrentCity, setText }) {
 
   const [submitted, setSubmitted] = useState(false);
 
@@ -75,9 +75,9 @@ function AddressForm({ onSearch, setStores, povertyData, setLoading, setCurrentC
     //Check if the poverty rate is greater than 19 and there are NO stores near you.
     if (pRate >= 19 && currStores.length === 0) {
       //Generate a button to link to a new page!
-      alert("YOU LIVE IN A FOOD DESERT!");
+      alert("You live in a food desert!");
     } else {
-      alert("YOU DO NOT LIVE IN A FOOD DESERT!");
+      alert("You don't live in a food desert!");
     }
 
     setLoading(false);
