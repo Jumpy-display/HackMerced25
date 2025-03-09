@@ -7,7 +7,7 @@ try:
 	database = client.get_database("map_data")
 	places = database.get_collection("places")
 	
-	query = { "name": "Merced" }
+	query = { 'name' : "Wheatland city" }
 	place = places.find_one(query)
 	
 	print(place)
