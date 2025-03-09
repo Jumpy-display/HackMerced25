@@ -3,9 +3,9 @@ import { Checkbox, Table, TableBody, TableCell, TableContainer, TableHead, Table
 
 const StoreTable = ({ stores }) => {
   return (
-    <div style={{ height: "30vh", overflowY: "auto", padding: "10px", margin: "30px" }}>
-      <Typography variant="h3">Grocery Stores Near You</Typography>
-      <Table stickyheader style={{ width: "75%", borderCollapse: "collapse", margin: "auto"}}>
+    <div style={{ height: "60vh", overflowY: "auto", padding: "10px", margin: "30px" }}>
+      <Typography style={{ padding: "20px"}} variant="h4">Grocery Stores Near You</Typography>
+      <Table stickyheader style={{ width: "85%", borderCollapse: "collapse", margin: "auto"}}>
         <TableHead>
           <TableRow>
             <TableCell style={{ border: "3px solid #ccc", padding: "8px", background: "#f4f4f4" }}>Name</TableCell>

@@ -3,6 +3,7 @@ import AddressForm from "./AddressForm";
 import GroceryMap from "./GroceryMap";
 import StoreTable from "./StoreTable";
 import { useState } from "react";
+import { Button, Typography} from "@mui/material";
 
 function App() {
   const [location, setLocation] = useState({ lat: 37.3022, lon: -120.4820 });
@@ -22,22 +23,15 @@ function App() {
 
   return (
     <div className="App">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px' }}>
-        <h1>Food Desert Finder</h1>
-        <button 
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '30px', margin: '0px' }}>
+        <Typography variant="h2">Food Desert Finder</Typography>
+        <Button variant="contained"
           onClick={openArticle}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: '#4CAF50',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer'
-          }}
         >
           Learn More About Food Deserts
-        </button>
+        </Button>
       </div>
+
       <AddressForm 
         onSearch={handleSearch} 
         stores={stores} 
@@ -46,13 +40,11 @@ function App() {
         setLoading={setMapLoading}
         setCurrentCity={setCurrentCity}
       />
-      <GroceryMap
-        lat={location.lat}
-        lon={location.lon}
-        stores={stores}
-        loading={mapLoading}
-      />
+      
+      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '30px'}}>
+      <GroceryMap lat={location.lat} lon={location.lon} stores={stores} loading={mapLoading}/>
       <StoreTable stores={stores} />
+      </div>
     </div>
   );
 }

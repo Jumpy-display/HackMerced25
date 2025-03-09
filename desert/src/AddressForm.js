@@ -1,9 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, Button, TextField, Container } from "@mui/material";
 import { retrieveGeography } from "./AddressLookup.js";
 import { fetchStores } from "./GroceryMap";
 
 function AddressForm({ onSearch, setStores, povertyData, setLoading, setCurrentCity }) {
+
+  const [submitted, setSubmitted] = useState(false);
+
+  const [containerHeight, setContainerHeight] = useState(submitted ? "10rem" : "25rem");
+  useEffect(() => {
+    setContainerHeight(submitted ? "7.5rem" : "25rem");
+  }, [submitted]);
 
   const setPovertyData = (p) => {
     povertyData = p;
@@ -24,8 +31,6 @@ function AddressForm({ onSearch, setStores, povertyData, setLoading, setCurrentC
       zipcode: `${a.zipcode.replace(/[^\w\s]|_/g, "")}`
     };
   }
-
-  const [submitted, setSubmitted] = useState(false);
 
   const handleAddressChange = (e) => {
     setAddress({ ...address, [e.target.name]: e.target.value });
@@ -52,7 +57,10 @@ function AddressForm({ onSearch, setStores, povertyData, setLoading, setCurrentC
     fetch(`http://localhost:5000/api/places/${lookupData["lookupName"]}`)
       .then((res) => res.json())
       .then((data) => workWithPovertyData(data, latlon, setStores))
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error(err);
+        setLoading(false);
+      });
   };
 
   async function workWithPovertyData(info, latlon, setStores) {
@@ -99,16 +107,27 @@ function AddressForm({ onSearch, setStores, povertyData, setLoading, setCurrentC
         onSearch(parseFloat(data[0].lat), parseFloat(data[0].lon));
       } else {
         alert("Address not found.");
+        setLoading(false);
       }
       return [data[0].lat, data[0].lon];
     } catch (error) {
       console.error("Geocoding error:", error);
+      setLoading(false);
     }
     return;
   };
 
   return (
-    <Container style={{ marginTop: "2rem", marginBottom: "2rem", display: "flex", justifyContent: "center"}}>
+    <Container 
+      style={{ 
+        marginTop: "2rem", 
+        marginBottom: "2rem", 
+        display: "flex", 
+        height: containerHeight, 
+        justifyContent: "center",
+        transition: "height 0.5s ease"
+      }}
+    >
       <Card variant="outlined" style={{ padding: "1.5rem", width: "50%"}}>
         <CardContent>
           {!submitted ? (
@@ -123,7 +142,6 @@ function AddressForm({ onSearch, setStores, povertyData, setLoading, setCurrentC
             <div style={{ display: "flex", flexDirection: "column" }}>
               <Button variant="contained" color="primary" onClick={handleUnsubmit} fullWidth>Change Address</Button>
             </div>
-
           )}
         </CardContent>
       </Card>

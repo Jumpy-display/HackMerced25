@@ -81,8 +81,16 @@ const GroceryMap = ({ lat, lon, stores, loading }) => {
   if (!loading) {
     return (
       <div style={{ display: "flex", justifyContent: "center" }}>
-        <Box sx={{ padding: "1rem", borderRadius: "5px", height: "60vh", width: "50rem" }}>
-          <MapContainer center={[lat, lon]} zoom={14} style={{ height: "100%", width: "100%", borderRadius: "5px" }}>
+        <Box sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "60vh",
+          width: "50rem",
+          backgroundColor: "#f5f5f5",
+          borderRadius: "10px",
+        }}>
+          <MapContainer center={[lat, lon]} zoom={14} style={{ height: "100%", width: "100%"}}>
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             <CircleMarker center={[lat, lon]} radius={8} color="red" fillOpacity={1} />
             {stores.map((store, index) => (
@@ -99,27 +107,28 @@ const GroceryMap = ({ lat, lon, stores, loading }) => {
   else {
     return (
       <div style={{ display: "flex", justifyContent: "center" }}>
-      <Box sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "60vh",
-        width: "50rem",
-        backgroundColor: "#f5f5f5",
-        borderRadius: "5px"
-      }}>
-        <div
-          style={{
-            width: "48px",
-            height: "48px",
-            border: "5px solid #ddd",
-            borderBottomColor: "#666",
-            borderRadius: "50%",
-            animation: "rotation 1s linear infinite"
-          }}
-        />
-  
-        <style jsx>{`
+        <Box sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "60vh",
+          width: "50rem",
+          backgroundColor: "#f5f5f5",
+          borderRadius: "10px",
+
+        }}>
+          <div
+            style={{
+              width: "48px",
+              height: "48px",
+              border: "5px solid #ddd",
+              borderBottomColor: "#666",
+              borderRadius: "50%",
+              animation: "rotation 1s linear infinite"
+            }}
+          />
+
+          <style jsx>{`
           @keyframes rotation {
             0% {
               transform: rotate(0deg);
