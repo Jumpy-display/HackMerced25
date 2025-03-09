@@ -2,26 +2,35 @@ import React, { useEffect, useState } from 'react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import ReactMarkdown from 'react-markdown';
 import { useLocation } from 'react-router-dom';
+import { CircularProgress, Skeleton, Box, Typography } from '@mui/material';
 
   
 const GeminiComponent = () => {
   const [output, setOutput] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Start as false until we need to load
   const [error, setError] = useState(null);
-  const [city, setCity] = useState();
+  const [city, setCity] = useState(null); // Start as null to know if we've initialized
+  const [contentRequested, setContentRequested] = useState(false);
   const location = useLocation();
 
+  // Handle URL parameters
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const cityParam = params.get('city');
+    
     if (cityParam) {
       setCity(decodeURIComponent(cityParam));
+      setContentRequested(true);
+    } else if (city === null) {
+      // Only set default if city hasn't been set yet
+      setCity('Merced');
     }
-  }, [location]);
+  }, [location, city]);
 
+  // Fetch content when city changes or content is requested
   useEffect(() => {
-    // Only fetch if city is not empty
-    if (city) {
+    // Only proceed if we have a city and content has been requested
+    if (city && contentRequested) {
       const fetchGeminiOutput = async () => {
         try {
           setLoading(true);
@@ -34,7 +43,6 @@ const GeminiComponent = () => {
           const genAI = new GoogleGenerativeAI(apiKey);
           const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
           
-          // Prompt formatted over multiple lines for better readability
           const fixedPrompt = `I Want You To Act As A Content Writer Very Proficient SEO Writer Writes Fluently English. 
           Write a 3500-word 100% Unique, SEO-optimized, Human-Written article in English with at least 15 headings and 
           subheadings (including H1, H2, H3, and H4 headings) that covers the topic provided in the Prompt. 
@@ -47,7 +55,7 @@ const GeminiComponent = () => {
           this is important to Bold the Title and all headings of the article, and use appropriate headings for H tags. 
           Now Write An Article On This Topic. How to cope with living in a food desert? 
           Give an answer that starts off talking about how to shop in a food desert. 
-          Then lists resources for food banks and pantries in ${city},CA. 
+          Then lists resources for food banks and pantries in ${city}, CA. 
           Finally give resources for how to start a community garden.`;
           
           const result = await model.generateContent(fixedPrompt);
@@ -74,7 +82,12 @@ const GeminiComponent = () => {
       
       fetchGeminiOutput();
     }
-  }, [city]); // Add city to the dependency array so this runs when city changes
+  }, [city, contentRequested]);
+
+  // Add a function to trigger content generation with current city
+  const generateContent = () => {
+    setContentRequested(true);
+  };
 
   // Function to remove outline tables
   const removeOutlineTables = (text) => {
@@ -221,29 +234,67 @@ const GeminiComponent = () => {
       border-radius: 8px;
       margin: 20px 0;
     }
+
+    .generate-button {
+      background-color: #2563eb;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-bottom: 20px;
+    }
+
+    .generate-button:hover {
+      background-color: #1e40af;
+    }
   `;
+
+  const LoadingSkeleton = () => (
+    <Box sx={{ padding: 3 }}>
+      <Typography variant="h6" color="text.secondary" align="center" gutterBottom>
+        Generating article about food deserts in {city}...
+      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+        <CircularProgress />
+      </Box>
+      <Skeleton variant="rectangular" height={60} sx={{ mb: 2 }} />
+      <Skeleton variant="text" height={30} sx={{ mb: 1 }} />
+      <Skeleton variant="text" height={30} sx={{ mb: 1 }} />
+      <Skeleton variant="text" height={30} sx={{ mb: 3 }} />
+      
+      <Skeleton variant="rectangular" height={40} sx={{ mb: 2 }} />
+      <Skeleton variant="text" height={30} sx={{ mb: 1 }} />
+      <Skeleton variant="text" height={30} sx={{ mb: 1 }} />
+      <Skeleton variant="text" height={30} sx={{ mb: 3 }} />
+      
+      <Skeleton variant="rectangular" height={40} sx={{ mb: 2 }} />
+      <Skeleton variant="text" height={30} sx={{ mb: 1 }} />
+      <Skeleton variant="text" height={30} sx={{ mb: 1 }} />
+      <Skeleton variant="text" height={30} />
+    </Box>
+  );
 
   return (
     <div className="bg-gray-100 py-12">
       <style>{customStyles}</style>
       <div className="article-container">
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-pulse space-y-8 w-full">
-              <div className="h-20 bg-gray-200 rounded w-3/4"></div> {/* Increased height for loading title */}
-              <div className="space-y-4">
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-              </div>
-              <div className="h-6 bg-gray-200 rounded w-1/2 mt-8"></div>
-              <div className="space-y-4">
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-              </div>
-            </div>
+        {!contentRequested ? (
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-6">Food Desert Resources</h2>
+            <p className="mb-6">Current city: {city || "Merced"}</p>
+            <button 
+              className="generate-button"
+              onClick={generateContent}
+            >
+              Generate Content for {city || "Merced"}
+            </button>
           </div>
+        ) : loading ? (
+          <LoadingSkeleton />
         ) : error ? (
           <div className="bg-red-100 border-l-4 border-red-500 p-4 mb-4">
             <div className="flex">
