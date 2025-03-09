@@ -8,10 +8,20 @@ function App() {
   const [location, setLocation] = useState({ lat: 37.3022, lon: -120.4820 });
   const [stores, setStores] = useState([]);
 
+  const handleSearch = async (lat, lon) => {
+    setLocation({ lat, lon });
+    // Make sure the stores state is being updated here
+  };
+
   return (
     <div className="App">
-      <AddressForm onSearch={(lat, lon) => setLocation({ lat, lon })}/>
-      <GroceryMap lat={location.lat} lon={location.lon}/>
+      <AddressForm onSearch={handleSearch}/>
+      <GroceryMap 
+lat={location.lat} 
+lon={location.lon} 
+        stores={stores}
+        setStores={setStores}
+/>
       <StoreTable stores={stores} />
     </div>
   );
