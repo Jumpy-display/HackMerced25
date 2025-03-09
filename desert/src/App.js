@@ -14,8 +14,28 @@ function App() {
     setLocation({ lat, lon });
   };
 
+  const openArticle = () => {
+    window.open('/article', '_blank');
+  };
+
   return (
     <div className="App">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px' }}>
+        <h1>Food Desert Finder</h1>
+        <button 
+          onClick={openArticle}
+          style={{
+            padding: '10px 20px',
+            backgroundColor: '#4CAF50',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer'
+          }}
+        >
+          Learn More About Food Deserts
+        </button>
+      </div>
       <AddressForm onSearch={handleSearch} stores={stores} setStores={setStores} povertyData={povertyData} />
       <GroceryMap
         lat={location.lat}
