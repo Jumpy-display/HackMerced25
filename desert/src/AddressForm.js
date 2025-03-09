@@ -1,29 +1,38 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { Card, CardContent, Button, TextField, Container } from "@mui/material";
 
-const AddressForm = ({ onSearch }) => {
-  const [address, setAddress] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
+function AddressForm( {onSearch} ) {
+  
+  const [address, setAddress] = useState({
+    street: "",
+    city: "",
+    state: "",
+    zipcode: ""
+  });
 
-  // Fetch address suggestions (autocomplete)
-  // const fetchSuggestions = async (query) => {
-  //   if (query.length < 3) return; // Prevent too many requests
-  //   const url = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${encodeURIComponent(query)}&limit=5`;
-  //   try {
-  //     const response = await fetch(url);
-  //     const data = await response.json();
-  //     setSuggestions(data.map((item) => item.display_name));
-  //   } catch (error) {
-  //     console.error("Autocomplete error:", error);
-  //   }
-  // };
+  const [submitted, setSubmitted] = useState(false);
 
-  // Handle search button click
+  const handleAddressChange = (e) => {
+    setAddress({ ...address, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = () => {
+    setSubmitted(true);
+    handleSearch();
+  };
+
+  const handleUnsubmit = () => {
+    setSubmitted(false);
+  }
+
+
   const handleSearch = async () => {
     if (!address) {
       alert("Please enter an address.");
       return;
     }
-    const url = `https://geocode.maps.co/search?q=${encodeURIComponent(address)}&api_key=67ccd5cee0c03893031572fbzb29295`;
+    const fullAddress = `${address.street}, ${address.city}, ${address.state} ${address.zipcode}`.trim();
+    const url = `https://geocode.maps.co/search?q=${encodeURIComponent(fullAddress)}&api_key=67ccd5cee0c03893031572fbzb29295`;
     try {
       const response = await fetch(url);
       const data = await response.json();
@@ -38,28 +47,27 @@ const AddressForm = ({ onSearch }) => {
   };
 
   return (
-    <div style={{ padding: "10px", background: "#f4f4f4" }}>
-      <input
-        type="text"
-        value={address}
-        onChange={(e) => {
-          setAddress(e.target.value);
-          //fetchSuggestions(e.target.value);
-        }}
-        list="address-suggestions"
-        placeholder="Enter address (e.g., Merced, CA)"
-        style={{ width: "300px", padding: "5px", fontSize: "14px" }}
-      />
-      <datalist id="address-suggestions">
-        {suggestions.map((s, index) => (
-          <option key={index} value={s} />
-        ))}
-      </datalist>
-      <button onClick={handleSearch} style={{ padding: "5px 10px", fontSize: "14px" }}>
-        Search
-      </button>
-    </div>
+    <Container style={{ marginTop: "2rem", marginBottom: "2rem"}}>
+      <Card variant="outlined" style={{ padding: "1.5rem" }}>
+        <CardContent>
+          {!submitted ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <TextField defaultValue={`${address.street}`} label="Street" name="street" variant="filled" fullWidth onChange={handleAddressChange} />
+              <TextField defaultValue={`${address.city}`} label="City" name="city" variant="filled" fullWidth onChange={handleAddressChange} />
+              <TextField defaultValue={`${address.state}`} label="State" name="state" variant="filled" fullWidth onChange={handleAddressChange} />
+              <TextField defaultValue={`${address.zipcode}`} label="ZIP Code" name="zipcode" variant="filled" fullWidth onChange={handleAddressChange} />
+              <Button variant="contained" color="primary" onClick={handleSubmit} fullWidth>Submit</Button>
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column"}}>
+              <Button variant="contained" color="primary" onClick={handleUnsubmit} fullWidth>Change Address</Button>
+            </div>
+
+          )}
+        </CardContent>
+      </Card>
+    </Container>
   );
-};
+}
 
 export default AddressForm;
